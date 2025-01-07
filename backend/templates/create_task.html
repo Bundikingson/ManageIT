@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Task</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Task Management System</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('create_task') }}">Create Task</a>
+        </nav>
+    </header>
+
+    <section id="create-task">
+        <h2>Create a New Task</h2>
+        <form action="{{ url_for('create_task') }}" method="POST">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
+
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" required></textarea>
+
+            <label for="due_date">Due Date:</label>
+            <input type="date" id="due_date" name="due_date" required>
+
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+            </select>
+
+            <button type="submit">Create Task</button>
+        </form>
+    </section>
+</body>
+</html>

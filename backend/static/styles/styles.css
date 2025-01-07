@@ -1,0 +1,59 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+nav a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: white;
+}
+
+h1, h2 {
+    font-size: 24px;
+}
+
+#tasks ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#tasks li {
+    background-color: white;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 400px;
+    margin: auto;
+}
+
+form input, form textarea, form select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+form button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+}

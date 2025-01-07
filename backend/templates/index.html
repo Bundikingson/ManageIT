@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Task Management System</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('create_task') }}">Create Task</a>
+        </nav>
+    </header>
+
+    <section id="tasks">
+        <h2>Task List</h2>
+        <ul>
+            {% for task in tasks %}
+                <li>
+                    <p><strong>{{ task.title }}</strong> - {{ task.status }}</p>
+                    <a href="{{ url_for('view_task', task_id=task.id) }}">View Details</a>
+                    <a href="{{ url_for('delete_task', task_id=task.id) }}">Delete</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+</body>
+</html>

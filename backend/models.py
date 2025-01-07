@@ -1,12 +1,15 @@
-class Task:
-    def __init__(self, title, description):
-        self.id = len(tasks)
-        self.title = title
-        self.description = description
+from flask_sqlalchemy import SQLAlchemy
 
-    def to_dict(self):
-        return {'id': self.id, 'title': self.title, 'description': self.description}
+# Initialize the SQLAlchemy object
+db = SQLAlchemy()
 
-    def update(self, title, description):
-        self.title = title
-        self.description = description
+# Define the Task model
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    due_date = db.Column(db.Date, nullable=False)
+    status = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self):
+        return f'<Task {self.title}>'
