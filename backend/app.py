@@ -1,71 +1,88 @@
-from flask import Flask, render_template, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from dotenv import load_dotenv
-import os
-
-# Load environment variables from .env file
-load_dotenv()
+from flask import Flask, render_template, jsonify, request, redirect, url_for
+from models import db, Task
+from datetime import datetime
+from flask_migrate import Migrate
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# Configure the app
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
+# Configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'  # Update with your database URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['ENV'] = os.getenv('FLASK_ENV', 'production')  # Default to 'production' if not set
-app.config['DEBUG'] = os.getenv('FLASK_DEBUG', '0') == '1'
+app.config['SECRET_KEY'] = 'your-secret-key'  # Replace with a secure random key
 
-# Initialize the database
-db = SQLAlchemy(app)
-
-# Import models (place this after initializing the app and db to avoid circular imports)
-from models import Task, User
+# Initialize extensions
+db.init_app(app)
+migrate = Migrate(app, db)
 
 # Routes
 @app.route('/')
-def home():
-    return render_template('index.html')
-
-@app.route('/tasks', methods=['GET'])
-def get_tasks():
+def index():
+    """Landing page."""
     tasks = Task.query.all()
-    task_list = [{'id': t.id, 'title': t.title, 'description': t.description, 'due_date': t.due_date, 'priority': t.priority, 'status': t.status} for t in tasks]
-    return jsonify(task_list)
+    return render_template('index.html', tasks=tasks)
 
-@app.route('/tasks', methods=['POST'])
+@app.route('/add-task', methods=['POST'])
 def add_task():
-    data = request.get_json()
-    new_task = Task(
-        title=data.get('title'),
-        description=data.get('description'),
-        due_date=data.get('due_date'),
-        priority=data.get('priority'),
-        status=data.get('status')
-    )
-    db.session.add(new_task)
-    db.session.commit()
-    return jsonify({'message': 'Task added successfully!', 'task': new_task.id}), 201
+    """Add a new task."""
+    try:
+        title = request.form['title']
+        description = request.form['description']
+        due_date = datetime.strptime(request.form['due_date'], '%Y-%m-%d')
+        priority = request.form['priority']
+        status = request.form['status']
 
-@app.route('/tasks/<int:task_id>', methods=['PUT'])
+        new_task = Task(
+            title=title,
+            description=description,
+            due_date=due_date,
+            priority=priority,
+            status=status
+        )
+        db.session.add(new_task)
+        db.session.commit()
+
+        return redirect(url_for('index'))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/update-task/<int:task_id>', methods=['POST'])
 def update_task(task_id):
+    """Update an existing task."""
     task = Task.query.get_or_404(task_id)
-    data = request.get_json()
-    task.title = data.get('title', task.title)
-    task.description = data.get('description', task.description)
-    task.due_date = data.get('due_date', task.due_date)
-    task.priority = data.get('priority', task.priority)
-    task.status = data.get('status', task.status)
-    db.session.commit()
-    return jsonify({'message': 'Task updated successfully!'})
+    try:
+        task.title = request.form['title']
+        task.description = request.form['description']
+        task.due_date = datetime.strptime(request.form['due_date'], '%Y-%m-%d')
+        task.priority = request.form['priority']
+        task.status = request.form['status']
 
-@app.route('/tasks/<int:task_id>', methods=['DELETE'])
+        db.session.commit()
+        return redirect(url_for('index'))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/delete-task/<int:task_id>', methods=['POST'])
 def delete_task(task_id):
+    """Delete a task."""
     task = Task.query.get_or_404(task_id)
-    db.session.delete(task)
-    db.session.commit()
-    return jsonify({'message': 'Task deleted successfully!'})
+    try:
+        db.session.delete(task)
+        db.session.commit()
+        return redirect(url_for('index'))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 
-# Run the app
+# Error handling
+@app.errorhandler(404)
+def page_not_found(e):
+    """Handle 404 errors."""
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    """Handle 500 errors."""
+    return render_template('500.html'), 500
+
 if __name__ == '__main__':
-    # Use host '0.0.0.0' to allow access from outside the container if using Docker
-    app.run(host='0.0.0.0', port=5000,debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
