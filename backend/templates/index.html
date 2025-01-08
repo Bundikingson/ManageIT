@@ -3,29 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Management System</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+    <title>ManageIT - Task Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header>
-        <h1>Task Management System</h1>
-        <nav>
-            <a href="{{ url_for('index') }}">Home</a>
-            <a href="{{ url_for('create_task') }}">Create Task</a>
-        </nav>
+        <h1>Welcome to ManageIT</h1>
     </header>
-
-    <section id="tasks">
-        <h2>Task List</h2>
-        <ul>
-            {% for task in tasks %}
-                <li>
-                    <p><strong>{{ task.title }}</strong> - {{ task.status }}</p>
-                    <a href="{{ url_for('view_task', task_id=task.id) }}">View Details</a>
-                    <a href="{{ url_for('delete_task', task_id=task.id) }}">Delete</a>
-                </li>
-            {% endfor %}
-        </ul>
-    </section>
+    <main>
+        <section id="tasks">
+            <h2>Tasks Overview</h2>
+            <ul id="task-list">
+                <!-- Tasks will be dynamically added here -->
+            </ul>
+        </section>
+        <section id="add-task">
+            <h2>Add New Task</h2>
+            <form action="/add-task" method="POST">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required>
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" required></textarea>
+                <button type="submit">Add Task</button>
+            </form>
+        </section>
+    </main>
 </body>
 </html>
